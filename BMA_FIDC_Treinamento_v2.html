@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMA FIDC · Treinamento Checagem</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0D1B40;--blue:#1A3A8F;--mid:#2563EB;--gold:#F59E0B;--gold2:#B45309;
+  --green:#16A34A;--red:#DC2626;--purple:#7C3AED;--orange:#EA580C;--teal:#0891B2;
+  --white:#FFFFFF;--off:#F8FAFC;--gray:#64748B;--lgray:#E2E8F0;--dark:#1E293B;
+  --warn:#92400E;--warnbg:#FEF3C7;--slate:#475569;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--dark);min-height:100vh;overflow-x:hidden}
+.screen{display:none;min-height:100vh;position:relative;z-index:1}
+.screen.active{display:flex;flex-direction:column}
+
+/* ── LOGIN ── */
+#screen-login{background:linear-gradient(135deg,#0D1B40 0%,#1A3A8F 60%,#0D1B40 100%);align-items:center;justify-content:center;padding:1.5rem}
+.login-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(12px);border-radius:20px;padding:2.5rem 2.2rem;width:100%;max-width:400px;text-align:center}
+.login-logo{font-family:'Syne',sans-serif;font-size:.75rem;letter-spacing:.2em;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:1.6rem}
+.login-title{font-family:'Syne',sans-serif;font-size:1.55rem;font-weight:800;color:var(--white);margin-bottom:.4rem}
+.login-sub{font-size:.85rem;color:rgba(255,255,255,.5);margin-bottom:2rem;line-height:1.5}
+.tabs{display:flex;background:rgba(255,255,255,.07);border-radius:8px;padding:3px;margin-bottom:1.6rem;gap:3px}
+.tab{flex:1;padding:.45rem;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;color:rgba(255,255,255,.5);border:none;background:transparent}
+.tab.active{background:var(--white);color:var(--navy)}
+.field{margin-bottom:1rem;text-align:left}
+.field label{display:block;font-size:.75rem;font-weight:600;color:rgba(255,255,255,.55);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.07em}
+.field input{width:100%;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:.72rem 1rem;font-size:.9rem;color:var(--white);font-family:'DM Sans',sans-serif;outline:none;transition:border .18s}
+.field input::placeholder{color:rgba(255,255,255,.3)}
+.field input:focus{border-color:var(--gold)}
+.login-err{background:rgba(220,38,38,.18);border:1px solid rgba(220,38,38,.4);color:#FCA5A5;border-radius:8px;padding:.65rem 1rem;font-size:.82rem;margin-bottom:1rem;display:none}
+.login-err.show{display:block}
+.btn-login{width:100%;background:var(--gold);color:var(--navy);font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;padding:.82rem;border-radius:8px;border:none;cursor:pointer;transition:all .18s;margin-top:.4rem}
+.btn-login:hover{background:#D97706;transform:translateY(-1px)}
+.register-hint{font-size:.75rem;color:rgba(255,255,255,.35);margin-top:1.2rem}
+
+/* ── TOP BAR ── */
+.top-bar{background:var(--navy);padding:.8rem 1.6rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.07)}
+.logo{font-family:'Syne',sans-serif;font-weight:800;color:var(--white);font-size:.93rem;letter-spacing:.04em}
+.logo span{color:var(--gold)}
+.user-chip{display:flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:2rem;padding:.35rem .8rem .35rem .45rem}
+.user-avatar{width:26px;height:26px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:800;color:var(--navy)}
+.user-name{font-size:.8rem;color:rgba(255,255,255,.8);font-weight:500}
+.tb-right{display:flex;align-items:center;gap:.6rem}
+.tb-btn{background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);font-size:.78rem;padding:.38rem .9rem;border-radius:6px;border:1px solid rgba(255,255,255,.13);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.tb-btn:hover{background:rgba(255,255,255,.14);color:var(--white)}
+.tb-gold{background:var(--gold);color:var(--navy);font-weight:700;border:none}
+.tb-gold:hover{background:#D97706}
+
+/* ── ANALYST DASHBOARD ── */
+#screen-dashboard{background:var(--off)}
+.dash-hero{background:linear-gradient(135deg,var(--navy),var(--blue));padding:2rem 2rem 1.8rem;position:relative;overflow:hidden}
+.dash-hero::after{content:'';position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(245,158,11,.08);pointer-events:none}
+.dash-welcome{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--white);margin-bottom:.25rem}
+.dash-sub{font-size:.87rem;color:rgba(255,255,255,.55)}
+.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;padding:1.6rem}
+.dstat{background:var(--white);border:1.5px solid var(--lgray);border-radius:12px;padding:1rem 1.1rem;position:relative;overflow:hidden}
+.dstat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.dstat.blue::before{background:var(--mid)}
+.dstat.green::before{background:var(--green)}
+.dstat.orange::before{background:var(--orange)}
+.dstat.purple::before{background:var(--purple)}
+.dstat-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;line-height:1;margin-bottom:.28rem}
+.dstat.blue .dstat-num{color:var(--mid)}
+.dstat.green .dstat-num{color:var(--green)}
+.dstat.orange .dstat-num{color:var(--orange)}
+.dstat.purple .dstat-num{color:var(--purple)}
+.dstat-lbl{font-size:.73rem;color:var(--gray)}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;padding:0 1.6rem 1.6rem}
+.dash-card{background:var(--white);border:1.5px solid var(--lgray);border-radius:13px;overflow:hidden}
+.dc-head{padding:.9rem 1.2rem;border-bottom:1px solid var(--lgray);display:flex;align-items:center;justify-content:space-between}
+.dc-title{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;color:var(--navy)}
+.dc-body{padding:1.1rem 1.2rem}
+.progress-row{margin-bottom:.8rem}
+.pr-top{display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.35rem}
+.pr-label{color:var(--dark);font-weight:500}
+.pr-pct{color:var(--gray);font-weight:600}
+.pr-bar{height:7px;background:var(--lgray);border-radius:4px;overflow:hidden}
+.pr-fill{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.quiz-attempt{display:flex;align-items:center;gap:.7rem;padding:.6rem 0;border-bottom:1px solid var(--lgray)}
+.quiz-attempt:last-child{border-bottom:none}
+.qa-score{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:.82rem;font-weight:800;flex-shrink:0}
+.qa-info{flex:1}
+.qa-date{font-size:.77rem;color:var(--gray)}
+.qa-result{font-size:.84rem;font-weight:600;color:var(--dark)}
+.feedback-box{background:var(--off);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:.85rem 1rem;font-size:.84rem;color:var(--dark);line-height:1.62}
+.feedback-box strong{color:var(--navy)}
+.module-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .65rem;border-radius:2rem;font-size:.73rem;font-weight:600;margin:.2rem}
+.empty-state{text-align:center;padding:1.5rem 1rem;color:var(--gray);font-size:.85rem}
+
+/* ── MENU (modules list) ── */
+#screen-menu{background:var(--off)}
+.menu-hero{background:linear-gradient(135deg,var(--navy),var(--blue));padding:2rem 1.8rem 1.8rem;color:var(--white)}
+.menu-hero h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:.35rem}
+.menu-hero p{color:rgba(255,255,255,.55);font-size:.86rem}
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:1.1rem;padding:1.7rem}
+.module-card{background:var(--white);border:1.5px solid var(--lgray);border-radius:13px;overflow:hidden;cursor:pointer;transition:transform .17s,box-shadow .17s,border-color .17s}
+.module-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(13,27,64,.11);border-color:var(--mid)}
+.mc-accent{height:5px}
+.mc-body{padding:1.1rem 1.3rem}
+.mc-tag{display:inline-block;font-size:.67rem;font-weight:700;padding:.2rem .6rem;border-radius:2rem;margin-bottom:.6rem;text-transform:uppercase;letter-spacing:.07em}
+.mc-title{font-family:'Syne',sans-serif;font-size:.96rem;font-weight:700;color:var(--navy);margin-bottom:.32rem;line-height:1.3}
+.mc-desc{font-size:.78rem;color:var(--gray);line-height:1.5}
+.mc-footer{padding:.68rem 1.3rem;border-top:1px solid var(--lgray);display:flex;align-items:center;justify-content:space-between;font-size:.72rem;color:var(--gray)}
+.badge-done{background:#DCFCE7;color:var(--green);font-weight:700;padding:.14rem .55rem;border-radius:2rem}
+.badge-go{background:#EFF6FF;color:var(--mid);font-weight:600;padding:.14rem .55rem;border-radius:2rem}
+
+/* ── LESSON ── */
+#screen-lesson{background:var(--off)}
+.lesson-layout{display:flex;flex:1;min-height:0;overflow:hidden}
+.lesson-sidebar{width:245px;flex-shrink:0;background:var(--navy);padding:1.2rem .85rem;overflow-y:auto}
+.lesson-sidebar h3{font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.85rem;padding:0 .3rem}
+.sidebar-item{display:flex;align-items:flex-start;gap:.6rem;padding:.58rem .5rem;border-radius:7px;margin-bottom:.22rem;cursor:pointer;transition:background .15s}
+.sidebar-item:hover{background:rgba(255,255,255,.07)}
+.sidebar-item.active{background:rgba(245,158,11,.14);border-left:3px solid var(--gold)}
+.si-num{width:20px;height:20px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:.63rem;font-weight:700;color:var(--white);margin-top:2px}
+.sidebar-item.done .si-num{background:var(--green)}
+.si-label{font-size:.77rem;color:rgba(255,255,255,.62);line-height:1.37}
+.sidebar-item.active .si-label{color:var(--white);font-weight:600}
+.lesson-main{flex:1;overflow-y:auto;padding:2rem 2.4rem;max-width:860px;width:100%}
+.lesson-tag{display:inline-flex;align-items:center;gap:.32rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;padding:.26rem .82rem;border-radius:2rem;margin-bottom:1rem}
+.lesson-h1{font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;color:var(--navy);line-height:1.2;margin-bottom:.7rem}
+.lesson-lead{font-size:.94rem;color:var(--gray);line-height:1.72;margin-bottom:1.7rem;padding-left:1rem;border-left:3px solid var(--gold)}
+.lesson-section{margin-bottom:1.7rem}
+.lesson-section h3{font-family:'Syne',sans-serif;font-size:.94rem;font-weight:700;color:var(--navy);margin-bottom:.72rem;display:flex;align-items:center;gap:.42rem}
+.lesson-section h3::before{content:'';display:inline-block;width:4px;height:1em;background:var(--gold);border-radius:2px}
+.lesson-section p{font-size:.89rem;color:var(--dark);line-height:1.74;margin-bottom:.72rem}
+.info-box{border-radius:9px;padding:.95rem 1.15rem;margin-bottom:.82rem;font-size:.85rem;line-height:1.62}
+.info-box.blue{background:#EFF6FF;border-left:4px solid var(--mid);color:#1e3a8a}
+.info-box.amber{background:var(--warnbg);border-left:4px solid var(--gold);color:var(--warn)}
+.info-box.red{background:#FEF2F2;border-left:4px solid var(--red);color:#7f1d1d}
+.info-box.green{background:#F0FDF4;border-left:4px solid var(--green);color:#14532d}
+.info-box strong{font-weight:700}
+.classif-grid{display:grid;grid-template-columns:1fr 1fr;gap:.72rem;margin-bottom:.88rem}
+.classif-item{border-radius:8px;padding:.82rem .95rem;border:1.5px solid var(--lgray);background:var(--white)}
+.ci-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.25rem}
+.ci-desc{font-size:.77rem;color:var(--gray);line-height:1.47}
+.flowchart{background:var(--white);border:1.5px solid var(--lgray);border-radius:12px;padding:1.5rem 1.2rem;margin-bottom:1.3rem;overflow-x:auto}
+.flow-title{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--navy);margin-bottom:1.2rem;text-transform:uppercase;letter-spacing:.06em}
+.flow-row{display:flex;align-items:flex-start;justify-content:center;gap:.5rem;margin-bottom:.4rem}
+.flow-arrow-down{display:flex;justify-content:center;font-size:1.1rem;color:var(--gray);margin:.08rem 0}
+.flow-label{font-size:.68rem;font-weight:700;align-self:center;color:var(--gray);flex-shrink:0}
+.fnode{border-radius:8px;padding:.55rem .82rem;text-align:center;font-size:.75rem;font-weight:500;line-height:1.32;min-width:105px;max-width:180px;flex-shrink:0}
+.fnode.start{background:var(--navy);color:var(--white);font-weight:700}
+.fnode.question{background:var(--warnbg);border:2px solid var(--gold);color:var(--warn);font-weight:700}
+.fnode.ok{background:#F0FDF4;border:1.5px solid var(--green);color:#14532d}
+.fnode.warn{background:#FFF7ED;border:1.5px solid var(--orange);color:#7c2d12}
+.fnode.danger{background:#FEF2F2;border:1.5px solid var(--red);color:#7f1d1d}
+.fnode.info{background:#EFF6FF;border:1.5px solid var(--mid);color:#1e3a8a}
+.fnode.purple-n{background:#F5F3FF;border:1.5px solid var(--purple);color:#4c1d95}
+.lesson-nav{display:flex;justify-content:space-between;align-items:center;margin-top:2rem;padding-top:1.3rem;border-top:1px solid var(--lgray)}
+.btn-nav{display:inline-flex;align-items:center;gap:.36rem;padding:.6rem 1.3rem;border-radius:8px;font-size:.84rem;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:'DM Sans',sans-serif}
+.btn-nav.prev{background:var(--lgray);color:var(--dark)}
+.btn-nav.prev:hover{background:#CBD5E1}
+.btn-nav.next{background:var(--navy);color:var(--white)}
+.btn-nav.next:hover{background:var(--blue)}
+.btn-nav.gold{background:var(--gold);color:var(--navy)}
+.btn-nav.gold:hover{background:#D97706}
+
+/* ── QUIZ ── */
+#screen-quiz{background:var(--off)}
+.quiz-wrap{max-width:720px;margin:0 auto;padding:2rem 1.5rem}
+.quiz-progress-bar{height:4px;background:var(--lgray);border-radius:3px;margin-bottom:1rem;overflow:hidden}
+.quiz-progress-fill{height:100%;background:linear-gradient(90deg,var(--mid),var(--gold));border-radius:3px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.quiz-meta{display:flex;justify-content:space-between;font-size:.77rem;color:var(--gray);margin-bottom:1.3rem}
+.quiz-case{background:var(--navy);color:var(--white);border-radius:11px;padding:1.1rem 1.3rem;margin-bottom:1.3rem}
+.qc-label{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:.6rem}
+.qc-body{font-size:.83rem;line-height:1.62;color:rgba(255,255,255,.82)}
+.qc-body strong{color:var(--white)}
+.pill-info{display:inline-block;background:rgba(255,255,255,.12);border-radius:4px;padding:.1rem .45rem;font-size:.74rem;margin:.1rem .07rem}
+.quiz-q{font-family:'Syne',sans-serif;font-size:1.06rem;font-weight:700;color:var(--navy);margin-bottom:1rem;line-height:1.4}
+.quiz-options{display:flex;flex-direction:column;gap:.58rem;margin-bottom:1.2rem}
+.quiz-opt{display:flex;align-items:center;gap:.78rem;background:var(--white);border:2px solid var(--lgray);border-radius:10px;padding:.78rem 1rem;cursor:pointer;transition:all .17s;font-size:.87rem;color:var(--dark)}
+.quiz-opt:hover:not(.disabled){border-color:var(--mid);background:#EFF6FF}
+.quiz-opt.selected{border-color:var(--mid);background:#EFF6FF}
+.quiz-opt.correct{border-color:var(--green);background:#F0FDF4;color:#14532d}
+.quiz-opt.wrong{border-color:var(--red);background:#FEF2F2;color:#7f1d1d}
+.quiz-opt.disabled{cursor:not-allowed}
+.opt-mk{width:25px;height:25px;border-radius:50%;flex-shrink:0;border:2px solid var(--lgray);display:flex;align-items:center;justify-content:center;font-size:.73rem;font-weight:700;color:var(--gray);transition:all .17s}
+.quiz-opt.selected .opt-mk{border-color:var(--mid);background:var(--mid);color:var(--white)}
+.quiz-opt.correct .opt-mk{border-color:var(--green);background:var(--green);color:var(--white)}
+.quiz-opt.wrong .opt-mk{border-color:var(--red);background:var(--red);color:var(--white)}
+.quiz-fb{border-radius:9px;padding:.9rem 1.05rem;margin-bottom:1rem;font-size:.84rem;line-height:1.6;display:none}
+.quiz-fb.show{display:block}
+.quiz-fb.correct{background:#F0FDF4;border-left:4px solid var(--green);color:#14532d}
+.quiz-fb.wrong{background:#FEF2F2;border-left:4px solid var(--red);color:#7f1d1d}
+.quiz-footer{display:flex;justify-content:flex-end;gap:.7rem}
+.btn-check{background:var(--navy);color:var(--white);border:none;border-radius:8px;padding:.62rem 1.4rem;font-size:.86rem;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.btn-check:disabled{opacity:.36;cursor:not-allowed}
+.btn-next-q{background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:.62rem 1.4rem;font-size:.86rem;font-weight:600;cursor:pointer;transition:all .15s;display:none;font-family:'DM Sans',sans-serif}
+.btn-next-q.show{display:block}
+.btn-next-q:hover{background:#D97706}
+
+/* ── RESULTS ── */
+#screen-results{background:var(--off)}
+.results-wrap{max-width:780px;margin:0 auto;padding:2rem 1.5rem}
+.results-hero{background:linear-gradient(135deg,var(--navy),var(--blue));border-radius:14px;padding:1.8rem 2rem 1.6rem;color:var(--white);text-align:center;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.results-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 30%,rgba(245,158,11,.12) 0%,transparent 60%)}
+.score-ring{width:100px;height:100px;border-radius:50%;border:5px solid rgba(255,255,255,.17);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto .85rem}
+.score-num{font-family:'Syne',sans-serif;font-size:1.85rem;font-weight:800;line-height:1}
+.score-lbl{font-size:.65rem;color:rgba(255,255,255,.52)}
+.results-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--white);margin-bottom:.32rem}
+.results-sub{font-size:.83rem;color:rgba(255,255,255,.55)}
+.results-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-bottom:1.5rem}
+.stat-card{background:var(--white);border:1.5px solid var(--lgray);border-radius:11px;padding:.9rem;text-align:center}
+.sc-num{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;line-height:1;margin-bottom:.26rem}
+.sc-lbl{font-size:.7rem;color:var(--gray)}
+.result-section{margin-bottom:1.6rem}
+.result-section h3{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;color:var(--navy);margin-bottom:.82rem;text-transform:uppercase;letter-spacing:.06em}
+.answer-review{background:var(--white);border:1.5px solid var(--lgray);border-radius:10px;margin-bottom:.72rem;overflow:hidden}
+.ar-header{display:flex;align-items:center;gap:.72rem;padding:.68rem .9rem;border-bottom:1px solid var(--lgray)}
+.ar-badge{width:23px;height:23px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--white)}
+.ar-badge.ok{background:var(--green)}.ar-badge.fail{background:var(--red)}
+.ar-q{font-size:.82rem;font-weight:600;color:var(--dark);flex:1}
+.ar-body{padding:.68rem .9rem;font-size:.79rem;line-height:1.57}
+.ar-lbl{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray);margin-bottom:.16rem}
+.ar-val{margin-bottom:.42rem}
+.ar-val.correct{color:var(--green)}.ar-val.wrong{color:var(--red)}
+.ar-expl{color:var(--gray);padding:.45rem .68rem;background:var(--off);border-radius:6px;border-left:3px solid var(--gold)}
+.weak-tag{display:inline-flex;align-items:center;gap:.3rem;background:#FEF2F2;border:1px solid #FCA5A5;color:var(--red);border-radius:2rem;padding:.26rem .72rem;font-size:.73rem;font-weight:600;margin:.18rem}
+.rec-card{background:var(--warnbg);border:1.5px solid var(--gold);border-radius:9px;padding:.82rem .95rem;margin-bottom:.62rem;font-size:.82rem;color:var(--warn);line-height:1.52}
+.rec-card strong{font-weight:700}
+.results-actions{display:flex;gap:.72rem;justify-content:center;margin-top:1.7rem;flex-wrap:wrap}
+
+/* ── MANAGER PANEL ── */
+#screen-manager{background:var(--off)}
+.mgr-hero{background:linear-gradient(135deg,#0D1B40,#1A3A8F);padding:1.8rem 2rem;color:var(--white)}
+.mgr-hero h2{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:800;margin-bottom:.3rem}
+.mgr-hero p{color:rgba(255,255,255,.52);font-size:.84rem}
+.mgr-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;padding:1.5rem 1.5rem .8rem}
+.mgr-body{padding:0 1.5rem 1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.mgr-card{background:var(--white);border:1.5px solid var(--lgray);border-radius:13px;overflow:hidden}
+.mgr-card.full{grid-column:1/-1}
+.mgr-ch{padding:.85rem 1.1rem;border-bottom:1px solid var(--lgray);display:flex;align-items:center;justify-content:space-between}
+.mgr-ch-title{font-family:'Syne',sans-serif;font-size:.83rem;font-weight:700;color:var(--navy)}
+.mgr-cb{padding:1rem 1.1rem}
+.analyst-row{display:flex;align-items:center;gap:.9rem;padding:.65rem 0;border-bottom:1px solid var(--lgray);cursor:pointer;transition:background .15s;border-radius:6px;padding:.65rem .5rem}
+.analyst-row:last-child{border-bottom:none}
+.analyst-row:hover{background:var(--off)}
+.ar-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:.82rem;font-weight:800;flex-shrink:0}
+.ar-info{flex:1}
+.ar-nm{font-size:.86rem;font-weight:600;color:var(--dark)}
+.ar-role{font-size:.72rem;color:var(--gray)}
+.ar-right{text-align:right}
+.ar-score-num{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800}
+.ar-score-lbl{font-size:.68rem;color:var(--gray)}
+.perf-bar-wrap{margin-bottom:.65rem}
+.pb-top{display:flex;justify-content:space-between;font-size:.77rem;margin-bottom:.28rem}
+.pb-name{color:var(--dark);font-weight:500}
+.pb-num{font-weight:700}
+.pb-bar{height:8px;background:var(--lgray);border-radius:4px;overflow:hidden}
+.pb-fill{height:100%;border-radius:4px}
+.detail-overlay{display:none;position:fixed;inset:0;background:rgba(13,27,64,.65);z-index:100;align-items:center;justify-content:center;padding:1rem}
+.detail-overlay.show{display:flex}
+.detail-modal{background:var(--white);border-radius:16px;width:100%;max-width:620px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.3)}
+.dm-head{background:var(--navy);padding:1.3rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-radius:16px 16px 0 0}
+.dm-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--white)}
+.dm-close{background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center}
+.dm-close:hover{background:rgba(255,255,255,.2)}
+.dm-body{padding:1.4rem 1.5rem}
+.dm-section{margin-bottom:1.3rem}
+.dm-section h4{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.7rem}
+.ai-feedback{background:linear-gradient(135deg,#F8FAFC,#EFF6FF);border:1.5px solid var(--lgray);border-radius:10px;padding:1rem 1.1rem;font-size:.84rem;color:var(--dark);line-height:1.65}
+.ai-feedback .ai-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gold2);margin-bottom:.5rem;display:flex;align-items:center;gap:.35rem}
+.attempt-chip{display:inline-flex;align-items:center;gap:.35rem;background:var(--off);border:1px solid var(--lgray);border-radius:6px;padding:.28rem .65rem;font-size:.75rem;margin:.2rem;font-weight:500}
+.no-data{text-align:center;padding:1.8rem;color:var(--gray);font-size:.84rem}
+
+/* ── MISC ── */
+.btn-primary{display:inline-flex;align-items:center;gap:.42rem;background:var(--gold);color:var(--navy);font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;padding:.78rem 1.9rem;border-radius:8px;border:none;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(245,158,11,.32)}
+.btn-outline{display:inline-flex;align-items:center;gap:.42rem;background:transparent;color:var(--dark);font-size:.88rem;padding:.7rem 1.5rem;border-radius:8px;border:1.5px solid var(--lgray);cursor:pointer;transition:all .15s}
+.btn-outline:hover{border-color:var(--mid);color:var(--mid)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .3s ease forwards}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen active">
+  <div class="login-card">
+    <div class="login-logo">BMA FIDC · Checagem</div>
+    <h1 class="login-title">Treinamento</h1>
+    <p class="login-sub">Faça login para acessar os módulos e acompanhar sua evolução.</p>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('analyst')">Analista</button>
+      <button class="tab" onclick="switchTab('manager')">Gestora</button>
+    </div>
+    <div class="login-err" id="login-err"></div>
+    <div id="login-form-analyst">
+      <div class="field"><label>Nome</label><input type="text" id="analyst-name" placeholder="Seu nome completo"></div>
+      <div class="field"><label>Senha</label><input type="password" id="analyst-pass" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin('analyst')"></div>
+      <button class="btn-login" onclick="doLogin('analyst')">Entrar →</button>
+      <p class="register-hint">Primeiro acesso? Crie uma senha de sua escolha — ela ficará salva para futuras entradas.</p>
+    </div>
+    <div id="login-form-manager" style="display:none">
+      <div class="field"><label>Senha da Gestora</label><input type="password" id="manager-pass" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin('manager')"></div>
+      <button class="btn-login" onclick="doLogin('manager')">Acessar painel →</button>
+      <p class="register-hint">Senha padrão: <strong style="color:rgba(255,255,255,.5)">bmafidc2024</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYST DASHBOARD -->
+<div id="screen-dashboard" class="screen">
+  <div class="top-bar">
+    <div class="logo">BMA <span>FIDC</span> · Checagem</div>
+    <div class="tb-right">
+      <div class="user-chip" id="dash-user-chip"></div>
+      <button class="tb-btn" onclick="goTo('menu')">📚 Módulos</button>
+      <button class="tb-btn tb-gold" onclick="goTo('quiz')">Quiz →</button>
+      <button class="tb-btn" onclick="logout()">Sair</button>
+    </div>
+  </div>
+  <div id="dash-content"></div>
+</div>
+
+<!-- MENU -->
+<div id="screen-menu" class="screen">
+  <div class="top-bar">
+    <div class="logo">BMA <span>FIDC</span> · Checagem</div>
+    <div class="tb-right">
+      <button class="tb-btn" onclick="goTo('dashboard')">← Início</button>
+      <button class="tb-btn tb-gold" onclick="goTo('quiz')">Quiz →</button>
+    </div>
+  </div>
+  <div class="menu-hero"><h2>Módulos de Estudo</h2><p>Estude cada módulo e depois faça o quiz para testar seu conhecimento.</p></div>
+  <div class="modules-grid" id="modules-grid"></div>
+</div>
+
+<!-- LESSON -->
+<div id="screen-lesson" class="screen">
+  <div class="top-bar">
+    <div class="logo">BMA <span>FIDC</span> · Checagem</div>
+    <div class="tb-right">
+      <button class="tb-btn" onclick="goTo('menu')">← Módulos</button>
+      <button class="tb-btn tb-gold" onclick="goTo('quiz')">Quiz →</button>
+    </div>
+  </div>
+  <div class="lesson-layout">
+    <nav class="lesson-sidebar" id="lesson-sidebar"></nav>
+    <main class="lesson-main" id="lesson-main"></main>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="screen-quiz" class="screen">
+  <div class="top-bar">
+    <div class="logo">BMA <span>FIDC</span> · Quiz</div>
+    <div class="tb-right"><button class="tb-btn" onclick="goTo('menu')">← Módulos</button></div>
+  </div>
+  <div class="quiz-wrap" id="quiz-wrap"></div>
+</div>
+
+<!-- RESULTS -->
+<div id="screen-results" class="screen">
+  <div class="top-bar">
+    <div class="logo">BMA <span>FIDC</span> · Resultado</div>
+    <div class="tb-right">
+      <button class="tb-btn" onclick="goTo('dashboard')">← Meu painel</button>
+      <button class="tb-btn tb-gold" onclick="restartQuiz()">Refazer quiz</button>
+    </div>
+  </div>
+  <div class="results-wrap" id="results-wrap"></div>
+</div>
+
+<!-- MANAGER PANEL -->
+<div id="screen-manager" class="screen">
+  <div class="top-bar">
+    <div class="logo">BMA <span>FIDC</span> · Painel da Gestora</div>
+    <div class="tb-right">
+      <button class="tb-btn" onclick="logout()">Sair</button>
+    </div>
+  </div>
+  <div id="manager-content"></div>
+</div>
+
+<!-- ANALYST DETAIL MODAL -->
+<div class="detail-overlay" id="detail-overlay" onclick="closeDetail(event)">
+  <div class="detail-modal" id="detail-modal"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// STORAGE (localStorage — persists across sessions)
+// ═══════════════════════════════════════════════
+const DB = {
+  get(key){ try{ return JSON.parse(localStorage.getItem('bma_'+key)); }catch(e){ return null; } },
+  set(key,val){ try{ localStorage.setItem('bma_'+key, JSON.stringify(val)); }catch(e){} },
+  getUser(name){ return DB.get('user_'+name.toLowerCase().replace(/\s+/g,'_')); },
+  setUser(name,data){ DB.set('user_'+name.toLowerCase().replace(/\s+/g,'_'), data); },
+  getAllUsers(){
+    const users=[];
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(k&&k.startsWith('bma_user_')){
+        try{ users.push(JSON.parse(localStorage.getItem(k))); }catch(e){}
+      }
+    }
+    return users;
+  }
+};
+
+const MANAGER_PASS = 'bmafidc2024';
+let CUR = null; // current logged-in user object
+
+// ═══════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',i===(t==='analyst'?0:1)));
+  document.getElementById('login-form-analyst').style.display=t==='analyst'?'block':'none';
+  document.getElementById('login-form-manager').style.display=t==='manager'?'block':'none';
+  document.getElementById('login-err').classList.remove('show');
+}
+
+function showErr(msg){ const el=document.getElementById('login-err'); el.textContent=msg; el.classList.add('show'); }
+
+function doLogin(role){
+  if(role==='manager'){
+    const p=document.getElementById('manager-pass').value;
+    if(p!==MANAGER_PASS){ showErr('Senha incorreta.'); return; }
+    CUR={role:'manager'};
+    renderManager();
+    goTo('manager');
+    return;
+  }
+  const name=document.getElementById('analyst-name').value.trim();
+  const pass=document.getElementById('analyst-pass').value;
+  if(!name){ showErr('Digite seu nome.'); return; }
+  if(pass.length<3){ showErr('A senha deve ter pelo menos 3 caracteres.'); return; }
+  let user=DB.getUser(name);
+  if(!user){
+    // first access — create user
+    user={ name, pass, role:'analyst', completedMods:[], quizAttempts:[], createdAt: Date.now() };
+    DB.setUser(name, user);
+  } else {
+    if(user.pass!==pass){ showErr('Senha incorreta. Se é seu primeiro acesso use um nome exato.'); return; }
+  }
+  CUR=user;
+  renderDashboard();
+  goTo('dashboard');
+}
+
+function logout(){ CUR=null; document.getElementById('login-err').classList.remove('show'); goTo('login'); }
+
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='menu') renderMenu();
+  if(id==='quiz') startQuiz();
+  if(id==='results') renderResults();
+  if(id==='dashboard') renderDashboard();
+  if(id==='manager') renderManager();
+}
+
+// ═══════════════════════════════════════════════
+// MODULES DATA
+// ═══════════════════════════════════════════════
+const MODULES=[
+{id:0,title:"O Relatório de Checagem",tag:"Fundamentos",tagColor:"#2563EB",tagBg:"#EFF6FF",accent:"#2563EB",desc:"O que é, para que serve e os 3 pilares de avaliação do cedente.",pages:[
+{title:"O que é o Relatório de Checagem?",tag:"📋 Fundamentos",tagColor:"#2563EB",lead:"O relatório avalia o perfil operacional do cedente em relação às operações cedidas ao Fundo. É uma ferramenta para minimizar riscos, identificar fraudes e garantir que o cedente atua dentro dos critérios da BMA.",content:`<div class="lesson-section"><h3>Os 3 Pilares de Avaliação</h3>
+<div class="info-box blue"><strong>1. Embarques (CT-e / MDF-e)</strong><br>Verifica se o cedente embarca as mercadorias dentro do prazo acordado. Acompanhamento via VADU. A ausência de embarques pode indicar risco ou divergência.</div>
+<div class="info-box blue"><strong>2. Entregas (Contato com Sacados)</strong><br>Avalia se os sacados reconhecem as compras, se os produtos foram entregues conforme combinado e se há sinalizações de desacordos.</div>
+<div class="info-box blue"><strong>3. Boletos (Beneficiário BMA)</strong><br>Confirma se os sacados estão recebendo boletos com beneficiário correto: BMA. Qualquer desvio pode indicar risco operacional ou fraude.</div>
+</div><div class="lesson-section"><h3>Prazos e Rotina</h3>
+<p>O relatório deve ser atualizado com intervalo máximo de <strong>30 dias</strong> a partir da data da operação. Anormalidades devem ser sinalizadas imediatamente.</p>
+<div class="info-box amber">⚠️ Todos os cedentes da carteira devem ter relatório enviado até o <strong>dia 05 do mês subsequente</strong>. Mínimo recomendado: <strong>4 relatórios semanais</strong>.</div></div>`}]},
+{id:1,title:"Classificações de Embarque",tag:"Classificações",tagColor:"#16A34A",tagBg:"#F0FDF4",accent:"#16A34A",desc:"Todas as classificações utilizadas: antes da operação, D+1, D+2, D+3, pré-faturamento e variações.",pages:[
+{title:"Classificações de Embarque",tag:"🏷️ Classificações",tagColor:"#16A34A",lead:"A classificação é sempre definida pela PREDOMINÂNCIA dos embarques. Um rótulo mais adiantado já engloba todas as faixas anteriores.",content:`<div class="lesson-section"><h3>Tabela Completa</h3>
+<div class="classif-grid">
+<div class="classif-item" style="border-color:#16A34A"><div class="ci-label" style="color:#16A34A">Antes da operação</div><div class="ci-desc">Notas com saída ANTES da data da cessão. Perfil excelente.</div></div>
+<div class="classif-item" style="border-color:#0891B2"><div class="ci-label" style="color:#0891B2">Na operação</div><div class="ci-desc">Saída antes e ATÉ a data da operação.</div></div>
+<div class="classif-item" style="border-color:#2563EB"><div class="ci-label" style="color:#2563EB">Em até D+1</div><div class="ci-desc">Saída em até 1 dia após a cessão.</div></div>
+<div class="classif-item" style="border-color:#7C3AED"><div class="ci-label" style="color:#7C3AED">Em até D+2</div><div class="ci-desc">Saída em até 2 dias após a cessão.</div></div>
+<div class="classif-item" style="border-color:#EA580C"><div class="ci-label" style="color:#EA580C">Em até D+3</div><div class="ci-desc">Saída em até 3 dias. Prazo máximo do padrão aceitável.</div></div>
+<div class="classif-item" style="border-color:#DC2626"><div class="ci-label" style="color:#DC2626">Pré-faturamento</div><div class="ci-desc">Predominância com mais de 3 dias de atraso. SINAL DE RISCO. Exige posicionamento.</div></div>
+<div class="classif-item" style="border-color:#B45309"><div class="ci-label" style="color:#B45309">Variando entre padrão e pré</div><div class="ci-desc">Parte no prazo, parte fora. Classificação provisória — exige investigação.</div></div>
+<div class="classif-item" style="border-color:#64748B"><div class="ci-label" style="color:#64748B">Inconclusivo</div><div class="ci-desc">Não é possível traçar um perfil. Solicitar novo posicionamento.</div></div>
+</div>
+<div class="info-box amber">💡 <strong>Regra da predominância:</strong> Se 60% embarcou antes e 40% no mesmo dia → classificação = <strong>"Embarque antes da operação"</strong>. Esse rótulo já engloba todas as faixas anteriores.</div></div>`}]},
+{id:2,title:"NF sem Saída: CIF, FOB e Decisão",tag:"Análise",tagColor:"#EA580C",tagBg:"#FFF7ED",accent:"#EA580C",desc:"Como identificar responsabilidade pelo frete e o que fazer em cada cenário de ausência de embarque.",pages:[
+{title:"CIF ou FOB: qual a diferença?",tag:"🚚 Frete",tagColor:"#EA580C",lead:"A primeira pergunta ao analisar uma NF sem saída é: quem é responsável pelo frete? Isso define todo o caminho da análise.",content:`<div class="lesson-section"><h3>CIF vs FOB</h3>
+<div class="classif-grid">
+<div class="classif-item" style="border-color:#2563EB"><div class="ci-label" style="color:#2563EB">CIF – Cedente responsável</div><div class="ci-desc">O cedente entrega no endereço do sacado e emite o CT-e. Ausência de embarque = alerta imediato.</div></div>
+<div class="classif-item" style="border-color:#EA580C"><div class="ci-label" style="color:#EA580C">FOB – Sacado retira</div><div class="ci-desc">O sacado coleta a mercadoria. Pode não haver CT-e — mas isso <strong>NÃO encerra a análise</strong>.</div></div>
+</div>
+<div class="info-box red">⚠️ <strong>Frete FOB não isenta de análise!</strong> É preciso entender: a mercadoria foi liberada pelo cedente? O sacado já coletou? Existe impedimento?</div></div>
+<div class="lesson-section"><h3>Os 3 cenários em frete FOB</h3>
+<div class="info-box green"><strong>✅ Cenário 1 – Sacado aguarda coleta ou já coletou</strong><br>Mercadoria liberada. Atraso logístico do sacado. Sem risco imediato. Registrar data prevista e acompanhar.</div>
+<div class="info-box amber"><strong>⚠️ Cenário 2 – Sacado sem espaço físico / recusa temporária</strong><br>Mercadoria liberada, sacado ainda não retirou. Risco baixo a médio. Monitorar boleto.</div>
+<div class="info-box red"><strong>⛔ Cenário 3 – Cedente NÃO liberou a mercadoria</strong><br>RISCO ALTO. Indica possível problema financeiro do cedente. Risco de inadimplência e prejuízo ao Fundo. Escalar imediatamente.</div></div>`},
+{title:"Fluxograma de Decisão – NF sem Saída",tag:"🔀 Fluxograma",tagColor:"#EA580C",lead:"Siga este fluxo sempre que identificar uma NF sem registro de saída no VADU.",content:`<div class="flowchart"><div class="flow-title">🔍 Fluxo — NF sem Registro de Saída</div>
+<div class="flow-row"><div class="fnode start">NF sem saída no VADU</div></div>
+<div class="flow-arrow-down">↓</div>
+<div class="flow-row"><div class="fnode question" style="max-width:215px">Frete CIF (cedente responsável)?</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:.45rem">
+<div style="display:flex;flex-direction:column;align-items:center;gap:.3rem">
+  <span class="flow-label" style="color:var(--green)">SIM ↓</span>
+  <div class="fnode question" style="max-width:100%">Este estado/sacado costuma apresentar saída?</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.55rem;width:100%;margin-top:.2rem">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:.28rem">
+      <span class="flow-label" style="color:var(--green)">SIM</span>
+      <div class="fnode warn" style="max-width:100%">Acompanhar. Buscar posicionamento: agendamento, coleta, transportadora.</div>
+      <span style="color:var(--gray);font-size:.9rem">↓</span>
+      <div class="fnode danger" style="max-width:100%">⚠️ Sinalizar se sem retorno</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:.28rem">
+      <span class="flow-label" style="color:var(--red)">NÃO</span>
+      <div class="fnode question" style="max-width:100%">Há ops. anteriores com esse sacado?</div>
+      <div style="display:flex;gap:.35rem;width:100%">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.2rem">
+          <span class="flow-label" style="color:var(--green)">SIM</span>
+          <div class="fnode info" style="max-width:100%;font-size:.7rem">Avaliar prazo médio histórico. Informar no relatório.</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.2rem">
+          <span class="flow-label" style="color:var(--red)">NÃO</span>
+          <div class="fnode purple-n" style="max-width:100%;font-size:.7rem">Inconclusivo. Solicitar posicionamento.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:.3rem">
+  <span class="flow-label" style="color:var(--red)">NÃO (FOB) ↓</span>
+  <div class="fnode question" style="max-width:100%">O cedente JÁ liberou a mercadoria?</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.55rem;width:100%;margin-top:.2rem">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:.28rem">
+      <span class="flow-label" style="color:var(--green)">SIM</span>
+      <div class="fnode ok" style="max-width:100%">✅ Sacado aguarda coleta. Registrar motivo e data prevista.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:.28rem">
+      <span class="flow-label" style="color:var(--red)">NÃO</span>
+      <div class="fnode danger" style="max-width:100%">⛔ RISCO ALTO. Cedente não liberou. Escalar imediatamente.</div>
+    </div>
+  </div>
+</div>
+</div></div>`}]},
+{id:3,title:"Pré-Faturamento: Sinais de Risco",tag:"Risco",tagColor:"#DC2626",tagBg:"#FEF2F2",accent:"#DC2626",desc:"Por que o pré-faturamento é um sinal de alerta financeiro grave e como pode gerar prejuízo ao Fundo.",pages:[
+{title:"Pré-Faturamento: o que é e por que é perigoso",tag:"⚠️ Risco",tagColor:"#DC2626",lead:"Pré-faturamento ocorre quando as notas embarcam predominantemente mais de 3 dias após a operação. Indica que a mercadoria saiu depois do financiamento ser formalizado — exige investigação imediata.",content:`<div class="lesson-section"><h3>O que o pré-faturamento pode indicar?</h3>
+<div class="info-box red"><strong>💸 Cedente com saúde financeira abalada</strong><br>O cedente pode estar usando o Fundo para antecipar dinheiro antes de ter a mercadoria pronta. Indica que ele precisa do capital do Fundo para viabilizar a própria operação.</div>
+<div class="info-box red"><strong>🧾 Risco de notas frias</strong><br>Notas emitidas antes de ter a mercadoria pronta ou sem operação comercial real. Risco de que as notas não correspondam a negócios legítimos.</div>
+<div class="info-box red"><strong>🤝 Risco de confirmações combinadas</strong><br>Conluio com sacados para confirmarem entregas que ainda não ocorreram — criando ciclo de fraude difícil de detectar.</div></div>
+<div class="lesson-section"><h3>Cadeia de risco</h3>
+<div class="flowchart"><div class="flow-title">⚠️ Pré-faturamento → Cadeia de risco</div>
+<div class="flow-row"><div class="fnode danger" style="max-width:215px">Cedente com dificuldade financeira</div></div>
+<div class="flow-arrow-down">↓</div>
+<div class="flow-row" style="gap:.9rem">
+<div class="fnode warn" style="max-width:180px">Antecipa recebíveis sem mercadoria pronta</div>
+<div class="fnode warn" style="max-width:180px">Emite notas sem operação real (notas frias)</div>
+</div>
+<div class="flow-arrow-down">↓</div>
+<div class="flow-row" style="gap:.9rem">
+<div class="fnode danger" style="max-width:180px">Sacado não recebe → não paga o boleto</div>
+<div class="fnode danger" style="max-width:180px">Confirmação combinada com sacado → fraude</div>
+</div>
+<div class="flow-arrow-down">↓</div>
+<div class="fnode danger" style="max-width:280px;margin:0 auto">⛔ Inadimplência + cedente sem capital = Prejuízo ao Fundo</div>
+</div></div>
+<div class="lesson-section"><h3>O que fazer?</h3>
+<div class="info-box amber">1️⃣ <strong>Não fechar a classificação imediatamente.</strong> "Pré" e "Variando" são provisórios.</div>
+<div class="info-box amber">2️⃣ <strong>Solicitar posicionamento do cedente</strong> sobre os motivos do atraso.</div>
+<div class="info-box amber">3️⃣ <strong>Verificar o histórico</strong> — é comportamento novo? Coincide com aumento de volume?</div>
+<div class="info-box red">⛔ <strong>Nunca ignorar</strong> como "atraso normal". Pode ser o primeiro sinal de deterioração financeira.</div></div>`}]},
+{id:4,title:"Casos Práticos: Cedentes da Carteira",tag:"Casos Reais",tagColor:"#7C3AED",tagBg:"#F5F3FF",accent:"#7C3AED",desc:"5 cedentes reais com dados fictícios: ACOFORT, AGROFOODS, AMP TEXTIL, ASSIS E ASSIS e ARMIL.",pages:[
+{title:"Casos Práticos – Cedentes Reais",tag:"🏭 Casos Reais",tagColor:"#7C3AED",lead:"Cedentes reais da carteira BMA, dados fictícios. Analise o raciocínio que leva à classificação correta.",content:`<div class="lesson-section"><h3>ACOFORT – Embarque antes da operação</h3>
+<div class="info-box blue"><strong>Operação 07/04 · 49 títulos · 14 sacados · MS</strong><br>075% antes da operação · 025% mesmo dia. Sacados confirmaram BMA. ✅ <strong>Antes da operação</strong> — 75% de predominância.</div></div>
+<div class="lesson-section"><h3>AGROFOODS – Embarque na operação</h3>
+<div class="info-box blue"><strong>Operação 10/04 · 10 títulos · 4 sacados · SP/AG</strong><br>081% mesmo dia · 019% antes. "AG" = UF não mapeada — investigar. ✅ <strong>Na operação</strong> — predominância no mesmo dia.</div></div>
+<div class="lesson-section"><h3>AMP TEXTIL – Embarque em até D+2</h3>
+<div class="info-box blue"><strong>Operação 14/04 · 13 títulos · 4 sacados · SP/SC/PB/RN</strong><br>059% D+1 a D+2 · 041% mesmo dia (SC). DDA em SC — registrar. ✅ <strong>Em até D+2</strong>.</div></div>
+<div class="lesson-section"><h3>ASSIS E ASSIS – Embarque em até D+3</h3>
+<div class="info-box blue"><strong>Operação 22/04 · 46 títulos · 15 sacados · MG + 10 estados</strong><br>047% D+1 a D+3 · 029% mesmo dia · 018% antes · 007% RJ sem saída (FOB, sacado coleta). ✅ <strong>Em até D+3</strong>.</div></div>
+<div class="lesson-section"><h3>ARMIL – Variando entre padrão e pré</h3>
+<div class="info-box red"><strong>Operação 25/04 · 13 títulos · 3 sacados · RN → CE, PE, SP</strong><br>070% D+1 a D+3 (padrão) · 030% 4-7 dias após (CE = pré). PE sem retorno. ⚠️ <strong>Variando entre padrão e pré</strong> — provisória. Solicitar posicionamento e escalar PE.</div></div>`}]}
+];
+
+// ═══════════════════════════════════════════════
+// QUIZ DATA
+// ═══════════════════════════════════════════════
+const QUIZ=[
+{module:"Fundamentos",mColor:"#2563EB",caseData:null,q:"Quais são os 3 pilares que devem estar em conformidade para o perfil do cedente ser considerado satisfatório?",opts:["Embarques, Entregas e Boletos","Emissão, Faturamento e Pagamento","Crédito, Checagem e Rating","CT-e, NF-e e Boleto bancário"],correct:0,exp:"Os 3 pilares são: (1) Embarques via CT-e/MDF-e no VADU; (2) Entregas confirmadas pelos sacados; (3) Boletos com beneficiário BMA confirmado. Apenas com os três alinhados a operação é satisfatória."},
+{module:"Fundamentos",mColor:"#2563EB",caseData:null,q:"Com que frequência máxima o relatório de checagem deve ser atualizado, mesmo sem anormalidades?",opts:["A cada 7 dias","A cada 15 dias","A cada 30 dias a partir da data da operação","Uma vez por mês no fechamento"],correct:2,exp:"O prazo máximo é 30 dias a partir da data da operação classificada. Anormalidades devem ser sinalizadas imediatamente. Todos os cedentes devem ter relatório até o dia 05 do mês subsequente."},
+{module:"Classificações",mColor:"#16A34A",caseData:{label:"ACOFORT · 07/04/2026",body:"49 títulos, 14 sacados. <span class='pill-info'>075% Antes da operação (MS)</span> <span class='pill-info'>025% Mesmo dia (MS, PR)</span>"},q:"Com base nos percentuais, qual a classificação correta para a ACOFORT?",opts:["Embarque na operação","Embarque antes da operação","Embarque em até D+1","Embarque em até D+3"],correct:1,exp:"A classificação é definida pela PREDOMINÂNCIA. Com 75% antes da operação, a classificação é 'Embarque antes da operação'. Essa classificação já contempla saídas antes E até a data da operação — os 25% do mesmo dia não alteram o resultado."},
+{module:"Classificações",mColor:"#16A34A",caseData:{label:"AMP TEXTIL · 14/04/2026",body:"13 títulos, 4 sacados. <span class='pill-info'>059% D+1 a D+2 (PB, RN, SP)</span> <span class='pill-info'>041% Mesmo dia (SC)</span>"},q:"Qual a classificação correta para a AMP TEXTIL?",opts:["Embarque na operação","Embarque em até D+1","Embarque em até D+2","Embarque em até D+3"],correct:2,exp:"'Embarque em até D+2' — maior faixa (59%) está em D+1 a D+2. Essa classificação já engloba saídas na operação (os 41% de SC). 'Em até D+2' significa que TODAS as saídas ocorreram dentro de 2 dias."},
+{module:"Classificações",mColor:"#16A34A",caseData:{label:"ASSIS E ASSIS · 22/04/2026",body:"46 títulos. <span class='pill-info'>047% D+1 a D+3</span> <span class='pill-info'>029% Mesmo dia</span> <span class='pill-info'>018% Antes</span> <span class='pill-info'>007% Sem evento RJ</span>"},q:"Com 4 faixas de embarque diferentes, como chegar na classificação desta operação?",opts:["Variando entre padrão e pré — faixas demais","Embarque em até D+3 — maior bloco em D+1 a D+3","Inconclusivo — sem predominância clara","Embarque antes da operação — tem notas em todos os prazos"],correct:1,exp:"Classificação pela predominância do maior bloco. 47% em D+1 a D+3 é o maior grupo → 'Embarque em até D+3'. Esse rótulo engloba antes, na operação, D+1, D+2 e D+3. Os 7% sem evento em RJ são frete FOB (coleta do sacado) e não alteram a classificação."},
+{module:"NF sem Saída",mColor:"#EA580C",caseData:null,q:"Qual é a PRIMEIRA pergunta a fazer ao analisar uma NF sem saída no VADU?",opts:["O sacado já confirmou recebimento?","O frete é CIF (cedente) ou FOB (sacado retira)?","Há operações anteriores com esse sacado?","A nota foi emitida há mais de 3 dias?"],correct:1,exp:"A responsabilidade pelo frete é o ponto de partida. Se CIF, há expectativa de CT-e e a ausência é alerta imediato. Se FOB, há nuances: a mercadoria foi liberada? O sacado coletou? Todo o caminho da análise depende dessa resposta."},
+{module:"NF sem Saída",mColor:"#EA580C",caseData:{label:"Cenário Prático – Frete FOB",body:"NF para MG. Frete <strong>FOB</strong>. Sem CT-e. Mercadoria disponível no galpão do cedente aguardando coleta pelo sacado."},q:"Qual a conclusão correta para essa NF sem saída?",opts:["Sem saída esperada — frete FOB isenta qualquer análise","Risco alto — cedente não liberou","Mercadoria liberada, atraso logístico do sacado. Registrar e acompanhar","Classificar como pré-faturamento imediatamente"],correct:2,exp:"FOB não encerra a análise, mas a mercadoria ESTÁ liberada. O atraso é logístico do sacado. Sem risco imediato. Registrar situação, informar data prevista e acompanhar o boleto."},
+{module:"NF sem Saída",mColor:"#EA580C",caseData:{label:"Cenário Prático – Cedente não libera",body:"NF para SP. Frete <strong>FOB</strong>. Sem CT-e. Sacado tenta retirar a mercadoria mas o cedente <strong>não autorizou a saída</strong> do produto."},q:"O que essa situação indica e qual deve ser a ação?",opts:["Normal — cedente tem prazo para liberar","Risco alto: possível problema financeiro. Escalar imediatamente para a gerente","Classificar como D+3 e aguardar","Solicitar novo CT-e ao cedente"],correct:1,exp:"SINAL DE RISCO MÁXIMO. Cedente que não libera mercadoria após a operação pode estar com problema financeiro grave. Risco em cadeia: sacado não recebe → não paga → cedente sem capital → prejuízo ao Fundo. Escalar imediatamente."},
+{module:"Pré-Faturamento",mColor:"#DC2626",caseData:{label:"ARMIL · 25/04/2026",body:"13 títulos, 3 sacados. <span class='pill-info'>070% D+1 a D+3 (PE, SP) – padrão</span> <span class='pill-info'>030% 4-7 dias após operação (CE) – pré</span>"},q:"O que diferencia 'pré-faturamento predominante' de 'variando entre padrão e pré'?",opts:["São sinônimos","Pré predominante: maioria fora do prazo. 'Variando': parte no padrão e parte em pré — como ARMIL","'Variando' é quando embarca antes da operação","Pré é só quando há notas frias comprovadas"],correct:1,exp:"Pré PREDOMINANTE: maioria embarca mais de 3 dias após. 'Variando': parte no prazo e parte fora. ARMIL: 70% no padrão e 30% em pré → 'Variando entre padrão e pré', classificação provisória que exige posicionamento do cedente."},
+{module:"Pré-Faturamento",mColor:"#DC2626",caseData:null,q:"Por que o pré-faturamento pode indicar que o cedente está com saúde financeira abalada?",opts:["Porque entrega rápido demais e sobrecarrega os sacados","Porque indica que o cedente usa o Fundo para antecipar capital antes de ter a mercadoria pronta, sugerindo necessidade urgente de caixa","Porque o CT-e foi emitido com erro de data","Porque o sacado comprou mais do que pode pagar"],correct:1,exp:"Quando o cedente precisa do dinheiro do Fundo para financiar sua própria produção, indica que não tem capital próprio. Risco: se o sacado não pagar (ou se a mercadoria nunca existiu), o cedente não terá capital para cobrir o prejuízo — resultando em perda para o Fundo."},
+{module:"Pré-Faturamento",mColor:"#DC2626",caseData:null,q:"Ao identificar pré-faturamento, qual deve ser o próximo passo IMEDIATO?",opts:["Fechar o relatório como 'Pré-faturamento' e enviar","Ignorar se for menos de 50% das notas","Solicitar posicionamento do cedente, verificar histórico e escalar se necessário","Contatar todos os sacados antes de qualquer ação"],correct:2,exp:"A classificação de pré é SEMPRE provisória. Próximos passos: (1) solicitar posicionamento; (2) verificar se é comportamento novo; (3) checar outros sinais de risco; (4) escalar para a gerente se predominante. Nunca fechar sem investigar."},
+{module:"Casos Práticos",mColor:"#7C3AED",caseData:{label:"AGROFOODS · 10/04/2026",body:"10 títulos, 4 sacados. Destino: SP e 'AG'. <span class='pill-info'>081% Mesmo dia (AG, SP)</span> <span class='pill-info'>019% Antes (AG)</span>. 'AG' não é UF brasileira reconhecida."},q:"O que o código 'AG' como destino pode indicar e como tratar no relatório?",opts:["É Alagoas — sem problema","Erro do sistema sem relevância","Sacado sem UF mapeada. Investigar e registrar como 'indefinido' ou com ressalva","Sacado estrangeiro, dispensa CT-e"],correct:2,exp:"'AG' não é UF brasileira. Pode indicar erro de cadastro. O analista deve investigar, registrar como ponto de atenção ('destino não identificado') e alertar a gerente se não conseguir esclarecimento. Nunca ignorar dados inconsistentes."},
+{module:"Casos Práticos",mColor:"#7C3AED",caseData:{label:"ASSIS E ASSIS · 22/04/2026",body:"7% das notas em RJ sem CT-e. Frete <strong>FOB</strong>. Sacado de RJ realiza a coleta. Cedente confirma mercadoria disponível."},q:"Esse 7% sem saída em RJ exige sinalização de risco?",opts:["Sim — qualquer nota sem CT-e é risco grave","Não — FOB com mercadoria liberada e sacado coletando não é anormalidade. Registrar com justificativa clara","Não — percentual abaixo de 10% pode ser ignorado","Sim — sempre que falta CT-e classifica como inconclusivo"],correct:1,exp:"FOB + mercadoria liberada + sacado coletando = sem anormalidade operacional. Deve ser REGISTRADO com justificativa clara (coleta do sacado). O que seria risco: mercadoria NÃO liberada pelo cedente."},
+{module:"Casos Práticos",mColor:"#7C3AED",caseData:{label:"ARMIL · 25/04/2026",body:"Sacado de PE não retornou contato após 2 tentativas. CE: pré-faturamento. SP: confirmou recebimento e boleto BMA correto."},q:"Como tratar o sacado de PE que não retornou no relatório?",opts:["Ignorar — um sacado não altera a análise","Registrar que PE está sem retorno e em acompanhamento. Se persistir, sinalizar para a gerente","Classificar a operação toda como inconclusiva","Dar como confirmado após 2 tentativas"],correct:1,exp:"Ausência de retorno SEMPRE deve ser registrada. Anotar que PE está sem retorno após X tentativas, manter em acompanhamento e escalar se persistir. Combinado com pré-faturamento em CE, esse acompanhamento é ainda mais crítico."},
+{module:"Casos Práticos",mColor:"#7C3AED",caseData:null,q:"Um sacado informa que vai pagar via DDA e não receberá boleto físico. Isso precisa ser registrado?",opts:["Não — DDA é normal e não precisa de registro","Sim — deve constar que o sacado informou DDA, para rastreabilidade, mesmo não sendo anormalidade","Sim — DDA é suspeito e indica possível fraude","Não — só registrar se o sacado confirmar não ter recebido o boleto"],correct:1,exp:"DDA não é anormalidade — é mecanismo legítimo. Mas SEMPRE deve ser registrado para rastreabilidade. O objetivo do pilar 'Boletos' é confirmar que o pagamento chegará ao BMA, independentemente do canal."},
+{module:"Visão Geral",mColor:"#0D1B40",caseData:null,q:"A partir de agora, qual deve ser a fonte principal de dados para os relatórios de checagem?",opts:["A planilha da Página 10, como sempre","O Resumo Narrativo do Power BI (Análise Recebíveis – Checagem)","Ambos em conjunto","Apenas o VADU para dados de embarque"],correct:1,exp:"O Resumo Narrativo do BI é a fonte oficial. Ele já consolida automaticamente: classificações, percentuais por prazo, distribuição por UF e demais dados — sem necessidade de buscar informações em partes separadas."}
+];
+
+// ═══════════════════════════════════════════════
+// QUIZ STATE
+// ═══════════════════════════════════════════════
+let qSt={idx:0,answers:[],selected:null,answered:false};
+
+// ═══════════════════════════════════════════════
+// DASHBOARD (Analyst)
+// ═══════════════════════════════════════════════
+function renderDashboard(){
+  if(!CUR) return;
+  // sync from DB
+  const fresh = DB.getUser(CUR.name);
+  if(fresh) CUR=fresh;
+
+  const chip=document.getElementById('dash-user-chip');
+  chip.innerHTML=`<div class="user-avatar">${CUR.name.charAt(0).toUpperCase()}</div><span class="user-name">${CUR.name}</span>`;
+
+  const mods=CUR.completedMods||[];
+  const attempts=CUR.quizAttempts||[];
+  const lastAttempt=attempts.length?attempts[attempts.length-1]:null;
+  const bestAttempt=attempts.length?attempts.reduce((b,a)=>a.pct>b.pct?a:b):null;
+  const avgPct=attempts.length?Math.round(attempts.reduce((s,a)=>s+a.pct,0)/attempts.length):0;
+
+  // per-module weakness
+  const modErrors={};
+  attempts.forEach(att=>{
+    att.answers.forEach(a=>{
+      if(!a.ok){
+        const m=QUIZ[a.qi].module;
+        modErrors[m]=(modErrors[m]||0)+1;
+      }
+    });
+  });
+  const weakArr=Object.entries(modErrors).sort((a,b)=>b[1]-a[1]).slice(0,3);
+
+  // feedback
+  const feedback=generateFeedback(CUR);
+
+  const c=document.getElementById('dash-content');
+  c.innerHTML=`
+  <div class="dash-hero fade-up">
+    <div class="dash-welcome">Olá, ${CUR.name.split(' ')[0]}! 👋</div>
+    <div class="dash-sub">Acompanhe sua evolução no treinamento de Análise Recebíveis.</div>
+  </div>
+  <div class="dash-stats fade-up">
+    <div class="dstat blue"><div class="dstat-num">${mods.length}/5</div><div class="dstat-lbl">Módulos concluídos</div></div>
+    <div class="dstat green"><div class="dstat-num">${attempts.length}</div><div class="dstat-lbl">Tentativas no quiz</div></div>
+    <div class="dstat orange"><div class="dstat-num">${bestAttempt?bestAttempt.pct+'%':'—'}</div><div class="dstat-lbl">Melhor resultado</div></div>
+    <div class="dstat purple"><div class="dstat-num">${avgPct?avgPct+'%':'—'}</div><div class="dstat-lbl">Média geral</div></div>
+  </div>
+  <div class="dash-grid fade-up">
+    <div class="dash-card">
+      <div class="dc-head"><span class="dc-title">📚 Progresso nos Módulos</span><button class="tb-btn" style="font-size:.74rem;padding:.3rem .75rem" onclick="goTo('menu')">Ver todos</button></div>
+      <div class="dc-body">
+        ${MODULES.map(m=>{
+          const done=mods.includes(m.id);
+          return `<div class="progress-row">
+            <div class="pr-top"><span class="pr-label">${m.title}</span><span class="pr-pct" style="color:${done?'var(--green)':'var(--gray)'}">${done?'✓ Concluído':'Pendente'}</span></div>
+            <div class="pr-bar"><div class="pr-fill" style="width:${done?100:0}%;background:${m.accent}"></div></div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="dash-card">
+      <div class="dc-head"><span class="dc-title">🎯 Histórico do Quiz</span><button class="tb-btn tb-gold" style="font-size:.74rem;padding:.3rem .75rem" onclick="goTo('quiz')">Novo quiz</button></div>
+      <div class="dc-body">
+        ${!attempts.length?'<div class="empty-state">Nenhuma tentativa ainda. Faça o quiz!</div>':
+          attempts.slice().reverse().slice(0,5).map(att=>{
+            const col=att.pct>=80?'var(--green)':att.pct>=60?'var(--orange)':'var(--red)';
+            const bg=att.pct>=80?'#DCFCE7':att.pct>=60?'#FFF7ED':'#FEF2F2';
+            return `<div class="quiz-attempt">
+              <div class="qa-score" style="background:${bg};color:${col}">${att.pct}%</div>
+              <div class="qa-info">
+                <div class="qa-result">${att.score}/${att.total} acertos</div>
+                <div class="qa-date">${new Date(att.date).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+              </div>
+            </div>`;
+          }).join('')}
+      </div>
+    </div>
+    <div class="dash-card" style="grid-column:1/-1">
+      <div class="dc-head"><span class="dc-title">💡 Feedback Personalizado</span></div>
+      <div class="dc-body">
+        ${weakArr.length?`<div style="margin-bottom:.9rem"><div style="font-size:.77rem;font-weight:600;color:var(--gray);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em">Tópicos com mais erros</div>
+        ${weakArr.map(([m,n])=>`<span class="module-badge" style="background:#FEF2F2;color:var(--red);border:1px solid #FCA5A5">❌ ${m} (${n} erro${n>1?'s':''})</span>`).join('')}</div>`:''}
+        <div class="feedback-box">${feedback}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function generateFeedback(user){
+  const mods=user.completedMods||[];
+  const attempts=user.quizAttempts||[];
+  if(!attempts.length && !mods.length) return '<strong>Bem-vindo ao treinamento!</strong> Comece pelos módulos de estudo antes de fazer o quiz. Sugerimos seguir a ordem dos módulos para melhor aproveitamento.';
+  if(!attempts.length) return `<strong>Ótimo início!</strong> Você já concluiu ${mods.length} módulo${mods.length>1?'s':''} de estudo. Quando se sentir pronto, faça o quiz para testar seu conhecimento!`;
+
+  const lastAtt=attempts[attempts.length-1];
+  const avgPct=Math.round(attempts.reduce((s,a)=>s+a.pct,0)/attempts.length);
+  const bestPct=attempts.reduce((b,a)=>a.pct>b?a.pct:b,0);
+  const trend=attempts.length>1?attempts[attempts.length-1].pct-attempts[attempts.length-2].pct:0;
+
+  const modErrors={};
+  attempts.forEach(att=>{att.answers.forEach(a=>{if(!a.ok){const m=QUIZ[a.qi].module;modErrors[m]=(modErrors[m]||0)+1;}});});
+  const worstMod=Object.entries(modErrors).sort((a,b)=>b[1]-a[1])[0];
+
+  let fb=`<strong>Média geral:</strong> ${avgPct}% · <strong>Melhor resultado:</strong> ${bestPct}% · <strong>Tentativas:</strong> ${attempts.length}.<br><br>`;
+  if(bestPct>=90) fb+=`🏆 <strong>Desempenho excelente!</strong> Você domina bem os conceitos do treinamento. `;
+  else if(bestPct>=75) fb+=`🎯 <strong>Bom desempenho!</strong> Você tem uma base sólida. `;
+  else if(bestPct>=55) fb+=`📚 <strong>Em evolução.</strong> Você está no caminho certo, mas ainda há pontos a reforçar. `;
+  else fb+=`🔁 <strong>Continue praticando.</strong> Releia os módulos antes de refazer o quiz. `;
+  if(trend>5) fb+=`📈 Você melhorou ${trend} pontos percentuais na última tentativa — ótima evolução!`;
+  else if(trend<-5) fb+=`📉 Você teve queda de ${Math.abs(trend)} p.p. na última tentativa. Revise os módulos antes de tentar novamente.`;
+  if(worstMod) fb+=`<br><br>⚠️ <strong>Foco em:</strong> ${worstMod[0]} — é o tópico com mais erros no histórico. Releia o módulo correspondente.`;
+  if(mods.length<5) fb+=`<br><br>📌 Você ainda tem ${5-mods.length} módulo${5-mods.length>1?'s':''} não concluído${5-mods.length>1?'s':''}. Completar todos os módulos melhora o aproveitamento no quiz.`;
+  return fb;
+}
+
+// ═══════════════════════════════════════════════
+// MENU
+// ═══════════════════════════════════════════════
+function renderMenu(){
+  const mods=CUR?(CUR.completedMods||[]):[];
+  document.getElementById('modules-grid').innerHTML=MODULES.map((m,i)=>`
+    <div class="module-card" onclick="openMod(${i})">
+      <div class="mc-accent" style="background:${m.accent}"></div>
+      <div class="mc-body">
+        <span class="mc-tag" style="color:${m.tagColor};background:${m.tagBg}">${m.tag}</span>
+        <div class="mc-title">${m.title}</div>
+        <div class="mc-desc">${m.desc}</div>
+      </div>
+      <div class="mc-footer">
+        <span>${m.pages.length} página${m.pages.length>1?'s':''}</span>
+        ${mods.includes(i)?'<span class="badge-done">✓ Concluído</span>':'<span class="badge-go">Estudar →</span>'}
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// LESSON
+// ═══════════════════════════════════════════════
+let curMod=0,curPage=0;
+function openMod(id){curMod=id;curPage=0;renderLesson();goTo('lesson')}
+
+function renderLesson(){
+  const m=MODULES[curMod],p=m.pages[curPage],total=m.pages.length;
+  const mods=CUR?(CUR.completedMods||[]):[];
+  document.getElementById('lesson-sidebar').innerHTML=`<h3>${m.tag}</h3>`+m.pages.map((pg,i)=>`
+    <div class="sidebar-item ${i===curPage?'active':''} ${i<curPage?'done':''}" onclick="toPage(${i})">
+      <div class="si-num">${i<curPage?'✓':(i+1)}</div>
+      <div class="si-label">${pg.title}</div>
+    </div>`).join('');
+  const isLast=curPage===total-1;
+  document.getElementById('lesson-main').innerHTML=`<div class="fade-up">
+    <span class="lesson-tag" style="color:${m.accent};background:${m.tagBg||'#EFF6FF'}">${p.tag}</span>
+    <h1 class="lesson-h1">${p.title}</h1>
+    <p class="lesson-lead">${p.lead}</p>
+    ${p.content}
+    <div class="lesson-nav">
+      ${curPage>0?`<button class="btn-nav prev" onclick="toPage(${curPage-1})">← Anterior</button>`:`<button class="btn-nav prev" onclick="goTo('menu')">← Módulos</button>`}
+      ${isLast?`<button class="btn-nav gold" onclick="completeMod()">✓ Concluir módulo</button>`:`<button class="btn-nav next" onclick="toPage(${curPage+1})">Próximo →</button>`}
+    </div></div>`;
+}
+
+function toPage(i){curPage=i;renderLesson();document.getElementById('lesson-main').scrollTop=0}
+function completeMod(){
+  if(!CUR) return;
+  const fresh=DB.getUser(CUR.name);
+  if(fresh) CUR=fresh;
+  if(!CUR.completedMods) CUR.completedMods=[];
+  if(!CUR.completedMods.includes(curMod)) CUR.completedMods.push(curMod);
+  DB.setUser(CUR.name, CUR);
+  goTo('menu');
+}
+
+// ═══════════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════════
+function startQuiz(){qSt={idx:0,answers:[],selected:null,answered:false};renderQ()}
+
+function renderQ(){
+  const q=QUIZ[qSt.idx],total=QUIZ.length,pct=(qSt.idx/total*100).toFixed(0);
+  document.getElementById('quiz-wrap').innerHTML=`
+    <div class="fade-up">
+      <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${pct}%"></div></div>
+      <div class="quiz-meta"><span style="color:${q.mColor};font-weight:600">${q.module}</span><span>Pergunta ${qSt.idx+1} de ${total}</span></div>
+    </div>
+    ${q.caseData?`<div class="quiz-case fade-up"><div class="qc-label">📋 Caso Prático – ${q.caseData.label}</div><div class="qc-body">${q.caseData.body}</div></div>`:''}
+    <div class="quiz-q fade-up">${q.q}</div>
+    <div class="quiz-options" id="qopts">
+      ${q.opts.map((o,i)=>`<div class="quiz-opt" id="qo${i}" onclick="selOpt(${i})"><div class="opt-mk">${String.fromCharCode(65+i)}</div><span>${o}</span></div>`).join('')}
+    </div>
+    <div class="quiz-fb" id="qfb"></div>
+    <div class="quiz-footer">
+      <button class="btn-check" id="bcheck" onclick="checkAns()" disabled>Confirmar</button>
+      <button class="btn-next-q" id="bnext" onclick="nextQ()">${qSt.idx<total-1?'Próxima →':'Ver resultado →'}</button>
+    </div>`;
+}
+
+function selOpt(i){
+  if(qSt.answered) return;
+  qSt.selected=i;
+  document.querySelectorAll('.quiz-opt').forEach((el,j)=>el.classList.toggle('selected',j===i));
+  document.getElementById('bcheck').disabled=false;
+}
+
+function checkAns(){
+  if(qSt.selected===null||qSt.answered) return;
+  qSt.answered=true;
+  const q=QUIZ[qSt.idx],ok=qSt.selected===q.correct;
+  qSt.answers.push({qi:qSt.idx,sel:qSt.selected,ok});
+  document.querySelectorAll('.quiz-opt').forEach((el,i)=>{
+    el.classList.add('disabled');
+    if(i===q.correct) el.classList.add('correct');
+    else if(i===qSt.selected) el.classList.add('wrong');
+  });
+  const fb=document.getElementById('qfb');
+  fb.className='quiz-fb show '+(ok?'correct':'wrong');
+  fb.innerHTML=(ok?'✅ <strong>Correto!</strong> ':'❌ <strong>Incorreto.</strong> ')+q.exp;
+  document.getElementById('bcheck').disabled=true;
+  document.getElementById('bnext').classList.add('show');
+}
+
+function nextQ(){
+  qSt.idx++;qSt.selected=null;qSt.answered=false;
+  if(qSt.idx>=QUIZ.length) saveAndShowResults();
+  else renderQ();
+}
+
+function saveAndShowResults(){
+  if(CUR && CUR.role==='analyst'){
+    const fresh=DB.getUser(CUR.name);
+    if(fresh) CUR=fresh;
+    if(!CUR.quizAttempts) CUR.quizAttempts=[];
+    const total=QUIZ.length,score=qSt.answers.filter(a=>a.ok).length;
+    CUR.quizAttempts.push({date:Date.now(),score,total,pct:Math.round(score/total*100),answers:qSt.answers});
+    DB.setUser(CUR.name,CUR);
+  }
+  goTo('results');
+}
+
+// ═══════════════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════════════
+function renderResults(){
+  const total=QUIZ.length,score=qSt.answers.filter(a=>a.ok).length,pct=Math.round(score/total*100);
+  const wrong=qSt.answers.filter(a=>!a.ok);
+  const mCount={};
+  wrong.forEach(a=>{const m=QUIZ[a.qi].module;mCount[m]=(mCount[m]||0)+1});
+  const weakMods=Object.entries(mCount).sort((a,b)=>b[1]-a[1]);
+  const medal=pct>=90?'🏆 Excelente!':pct>=70?'🎯 Bom trabalho!':pct>=50?'📚 Continue estudando':'🔁 Revise os módulos';
+  const rc=pct>=90?'#16A34A':pct>=70?'#2563EB':pct>=50?'#EA580C':'#DC2626';
+  const recs=[];
+  if(mCount['Pré-Faturamento']) recs.push('<strong>Pré-faturamento:</strong> Revise o módulo sobre sinais de risco financeiro e a cadeia de risco.');
+  if(mCount['NF sem Saída']) recs.push('<strong>NF sem Saída / CIF-FOB:</strong> Revise o fluxograma — preste atenção na diferença entre mercadoria liberada e não liberada pelo cedente.');
+  if(mCount['Classificações']) recs.push('<strong>Classificações:</strong> A classificação é sempre pela PREDOMINÂNCIA e cada rótulo engloba as faixas anteriores.');
+  if(mCount['Casos Práticos']) recs.push('<strong>Casos práticos:</strong> Releia os exemplos ACOFORT, AGROFOODS, AMP TEXTIL, ASSIS E ASSIS e ARMIL.');
+  if(!recs.length) recs.push('<strong>Parabéns!</strong> Aproveitamento excelente. Continue aplicando esses conceitos nas análises diárias.');
+
+  document.getElementById('results-wrap').innerHTML=`
+    <div class="results-hero fade-up">
+      <div class="score-ring" style="border-color:${rc}80">
+        <div class="score-num" style="color:${rc}">${pct}%</div>
+        <div class="score-lbl">${score}/${total} certas</div>
+      </div>
+      <div class="results-title">${medal}</div>
+      <div class="results-sub">Quiz BMA FIDC – Análise Recebíveis · Checagem</div>
+    </div>
+    <div class="results-stats fade-up">
+      <div class="stat-card"><div class="sc-num" style="color:var(--green)">${score}</div><div class="sc-lbl">Acertos</div></div>
+      <div class="stat-card"><div class="sc-num" style="color:var(--red)">${total-score}</div><div class="sc-lbl">Erros</div></div>
+      <div class="stat-card"><div class="sc-num" style="color:var(--mid)">${pct}%</div><div class="sc-lbl">Aproveitamento</div></div>
+    </div>
+    ${weakMods.length?`<div class="result-section fade-up"><h3>⚠ Tópicos com mais erros</h3><div>${weakMods.map(([m,n])=>`<span class="weak-tag">❌ ${m} (${n} erro${n>1?'s':''})</span>`).join('')}</div></div>`:''}
+    <div class="result-section fade-up"><h3>💡 Recomendações</h3>${recs.map(r=>`<div class="rec-card">${r}</div>`).join('')}</div>
+    <div class="result-section fade-up"><h3>📋 Gabarito comentado</h3>
+    ${qSt.answers.map(a=>{const q=QUIZ[a.qi];return `<div class="answer-review">
+      <div class="ar-header"><div class="ar-badge ${a.ok?'ok':'fail'}">${a.ok?'✓':'✗'}</div><div class="ar-q">${q.q}</div></div>
+      <div class="ar-body">
+        <div class="ar-lbl">Sua resposta</div><div class="ar-val ${a.ok?'correct':'wrong'}">${a.ok?'✅':'❌'} ${q.opts[a.sel]}</div>
+        ${!a.ok?`<div class="ar-lbl">Resposta correta</div><div class="ar-val correct">✅ ${q.opts[q.correct]}</div>`:''}
+        <div class="ar-expl">${q.exp}</div>
+      </div></div>`;}).join('')}
+    </div>
+    <div class="results-actions fade-up">
+      <button class="btn-primary" onclick="restartQuiz()">🔁 Refazer quiz</button>
+      <button class="btn-outline" onclick="goTo('dashboard')">← Meu painel</button>
+    </div>`;
+}
+function restartQuiz(){goTo('quiz')}
+
+// ═══════════════════════════════════════════════
+// MANAGER PANEL
+// ═══════════════════════════════════════════════
+function renderManager(){
+  const users=DB.getAllUsers().filter(u=>u.role==='analyst');
+  const totalAttempts=users.reduce((s,u)=>s+(u.quizAttempts||[]).length,0);
+  const avgScore=users.length?Math.round(users.filter(u=>(u.quizAttempts||[]).length>0).reduce((s,u)=>{
+    const last=u.quizAttempts[u.quizAttempts.length-1];return s+(last?last.pct:0);
+  },0)/Math.max(1,users.filter(u=>(u.quizAttempts||[]).length>0).length)):0;
+  const modsCompleted=users.reduce((s,u)=>s+(u.completedMods||[]).length,0);
+
+  // per-module error rate across all users
+  const modErrAll={};
+  users.forEach(u=>(u.quizAttempts||[]).forEach(att=>att.answers.forEach(a=>{
+    if(!a.ok){const m=QUIZ[a.qi].module;modErrAll[m]=(modErrAll[m]||0)+1;}
+  })));
+  const modErrArr=Object.entries(modErrAll).sort((a,b)=>b[1]-a[1]);
+
+  const cont=document.getElementById('manager-content');
+  cont.innerHTML=`
+  <div class="mgr-hero fade-up"><h2>Painel da Gestora</h2><p>Visão geral do treinamento de toda a equipe de checagem.</p></div>
+  <div class="mgr-stats fade-up">
+    <div class="dstat blue"><div class="dstat-num">${users.length}</div><div class="dstat-lbl">Analistas cadastrados</div></div>
+    <div class="dstat green"><div class="dstat-num">${totalAttempts}</div><div class="dstat-lbl">Total de tentativas</div></div>
+    <div class="dstat orange"><div class="dstat-num">${avgScore?avgScore+'%':'—'}</div><div class="dstat-lbl">Média da equipe (último quiz)</div></div>
+    <div class="dstat purple"><div class="dstat-num">${modsCompleted}</div><div class="dstat-lbl">Módulos concluídos (total)</div></div>
+  </div>
+  <div class="mgr-body fade-up">
+    <div class="mgr-card">
+      <div class="mgr-ch"><span class="mgr-ch-title">👥 Analistas — Resultado do Quiz</span></div>
+      <div class="mgr-cb">
+        ${!users.length?'<div class="no-data">Nenhum analista cadastrado ainda.</div>':
+          users.map(u=>{
+            const attempts=u.quizAttempts||[];
+            const last=attempts.length?attempts[attempts.length-1]:null;
+            const best=attempts.length?attempts.reduce((b,a)=>a.pct>b.pct?a:b):null;
+            const col=last?(last.pct>=80?'var(--green)':last.pct>=60?'var(--orange)':'var(--red)'):'var(--gray)';
+            const bg=last?(last.pct>=80?'#DCFCE7':last.pct>=60?'#FFF7ED':'#FEF2F2'):'var(--lgray)';
+            const av=u.name.charAt(0).toUpperCase();
+            const avColors=['#2563EB','#16A34A','#EA580C','#7C3AED','#0891B2','#DC2626'];
+            const avC=avColors[u.name.charCodeAt(0)%avColors.length];
+            return `<div class="analyst-row" onclick="openDetail('${u.name.replace(/'/g,"\\'")}')">
+              <div class="ar-av" style="background:${avC};color:white">${av}</div>
+              <div class="ar-info">
+                <div class="ar-nm">${u.name}</div>
+                <div class="ar-role">${attempts.length} tentativa${attempts.length!==1?'s':''} · ${(u.completedMods||[]).length}/5 módulos</div>
+              </div>
+              <div class="ar-right">
+                <div class="ar-score-num" style="color:${col}">${last?last.pct+'%':'—'}</div>
+                <div class="ar-score-lbl">último quiz</div>
+              </div>
+            </div>`;
+          }).join('')}
+      </div>
+    </div>
+    <div class="mgr-card">
+      <div class="mgr-ch"><span class="mgr-ch-title">⚠️ Erros por Tópico (equipe)</span></div>
+      <div class="mgr-cb">
+        ${!modErrArr.length?'<div class="no-data">Nenhum dado de quiz disponível ainda.</div>':
+          modErrArr.map(([mod,n])=>{
+            const maxN=modErrArr[0][1];
+            const pct=Math.round(n/maxN*100);
+            const col=pct>=80?'var(--red)':pct>=50?'var(--orange)':'var(--green)';
+            return `<div class="perf-bar-wrap">
+              <div class="pb-top"><span class="pb-name">${mod}</span><span class="pb-num" style="color:${col}">${n} erro${n>1?'s':''}</span></div>
+              <div class="pb-bar"><div class="pb-fill" style="width:${pct}%;background:${col}"></div></div>
+            </div>`;
+          }).join('')}
+      </div>
+    </div>
+    <div class="mgr-card">
+      <div class="mgr-ch"><span class="mgr-ch-title">📚 Progresso nos Módulos (equipe)</span></div>
+      <div class="mgr-cb">
+        ${MODULES.map(m=>{
+          const done=users.filter(u=>(u.completedMods||[]).includes(m.id)).length;
+          const pct=users.length?Math.round(done/users.length*100):0;
+          return `<div class="perf-bar-wrap">
+            <div class="pb-top"><span class="pb-name">${m.title}</span><span class="pb-num" style="color:var(--mid)">${done}/${users.length}</span></div>
+            <div class="pb-bar"><div class="pb-fill" style="width:${pct}%;background:${m.accent}"></div></div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="mgr-card">
+      <div class="mgr-ch"><span class="mgr-ch-title">📈 Evolução dos Scores</span></div>
+      <div class="mgr-cb">
+        ${!users.some(u=>(u.quizAttempts||[]).length>1)?'<div class="no-data">Dados insuficientes para análise de evolução.</div>':
+          users.filter(u=>(u.quizAttempts||[]).length>1).map(u=>{
+            const atts=u.quizAttempts;
+            const first=atts[0].pct,last=atts[atts.length-1].pct;
+            const diff=last-first;
+            const col=diff>=0?'var(--green)':'var(--red)';
+            return `<div class="analyst-row" style="cursor:default">
+              <div class="ar-av" style="background:var(--navy);color:white">${u.name.charAt(0).toUpperCase()}</div>
+              <div class="ar-info"><div class="ar-nm">${u.name}</div><div class="ar-role">${atts.length} tentativas</div></div>
+              <div class="ar-right">
+                <div class="ar-score-num" style="color:${col}">${diff>=0?'+':''}${diff}%</div>
+                <div class="ar-score-lbl">evolução</div>
+              </div>
+            </div>`;
+          }).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function openDetail(name){
+  const u=DB.getUser(name);
+  if(!u) return;
+  const attempts=u.quizAttempts||[];
+  const mods=u.completedMods||[];
+  const avColors=['#2563EB','#16A34A','#EA580C','#7C3AED','#0891B2','#DC2626'];
+  const avC=avColors[u.name.charCodeAt(0)%avColors.length];
+
+  const modErrors={};
+  attempts.forEach(att=>att.answers.forEach(a=>{if(!a.ok){const m=QUIZ[a.qi].module;modErrors[m]=(modErrors[m]||0)+1;}}));
+  const weakArr=Object.entries(modErrors).sort((a,b)=>b[1]-a[1]);
+
+  const feedback=generateFeedback(u);
+
+  document.getElementById('detail-modal').innerHTML=`
+    <div class="dm-head">
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <div style="width:34px;height:34px;border-radius:50%;background:${avC};color:white;display:flex;align-items:center;justify-content:center;font-family:Syne,sans-serif;font-weight:800">${u.name.charAt(0).toUpperCase()}</div>
+        <div class="dm-title">${u.name}</div>
+      </div>
+      <button class="dm-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="dm-body">
+      <div class="dm-section">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1rem">
+          <div class="stat-card"><div class="sc-num" style="color:var(--mid)">${attempts.length}</div><div class="sc-lbl">Tentativas</div></div>
+          <div class="stat-card"><div class="sc-num" style="color:var(--green)">${mods.length}/5</div><div class="sc-lbl">Módulos</div></div>
+          <div class="stat-card"><div class="sc-num" style="color:var(--orange)">${attempts.length?attempts.reduce((b,a)=>a.pct>b?a.pct:b,0)+'%':'—'}</div><div class="sc-lbl">Melhor</div></div>
+        </div>
+      </div>
+      <div class="dm-section"><h4>Histórico do Quiz</h4>
+        ${!attempts.length?'<div class="no-data">Nenhuma tentativa realizada.</div>':
+          attempts.map((att,i)=>{
+            const col=att.pct>=80?'var(--green)':att.pct>=60?'var(--orange)':'var(--red)';
+            const bg=att.pct>=80?'#DCFCE7':att.pct>=60?'#FFF7ED':'#FEF2F2';
+            return `<span class="attempt-chip"><span style="background:${bg};color:${col};border-radius:4px;padding:.1rem .35rem;font-weight:700">${att.pct}%</span> ${att.score}/${att.total} · ${new Date(att.date).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</span>`;
+          }).join('')}
+      </div>
+      ${weakArr.length?`<div class="dm-section"><h4>Tópicos com mais erros</h4>
+        <div>${weakArr.map(([m,n])=>`<span class="weak-tag">❌ ${m} (${n})</span>`).join('')}</div>
+      </div>`:''}
+      <div class="dm-section"><h4>Módulos concluídos</h4>
+        <div>${MODULES.map(m=>`<span class="module-badge" style="background:${mods.includes(m.id)?m.tagBg:'var(--lgray)'};color:${mods.includes(m.id)?m.tagColor:'var(--gray)'};border:1px solid ${mods.includes(m.id)?m.tagColor+'40':'var(--lgray)'}">${mods.includes(m.id)?'✓':''} ${m.tag}</span>`).join('')}</div>
+      </div>
+      <div class="dm-section"><h4>💡 Feedback da Gestora (IA)</h4>
+        <div class="ai-feedback">
+          <div class="ai-label">✨ Análise automática</div>
+          ${feedback}
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('detail-overlay').classList.add('show');
+}
+
+function closeDetail(e){
+  if(!e||e.target===document.getElementById('detail-overlay')) document.getElementById('detail-overlay').classList.remove('show');
+}
+</script>
+</body>
+</html>
